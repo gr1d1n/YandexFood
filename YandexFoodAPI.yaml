@@ -1,0 +1,457 @@
+openapi: 3.0.0
+info:
+  title: Яндекс Еда API
+  version: 1.0.0
+  description: API для взаимодействия с сервисом Яндекс Еда.  Позволяет получать информацию о ресторанах, меню, заказах и другую информацию.
+
+servers:
+  - url: https://api.yandex-eda.com/v1
+    description: Production server
+
+paths:
+  /restaurants:
+    get:
+      tags: 
+        - Restaurants
+      summary: Получить список ресторанов
+      description: Возвращает список ресторанов с фильтром по параметрам.
+      operationId: getAllRestaurants
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Restaurants'
+        '400':
+          description: Ошибка запроса
+    post:
+      summary: Создать новый ресторан
+      description: Создает новый ресторан
+      tags:
+        - Restaurants
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Restaurant'
+      responses:
+        '201':
+          description: Ресторан успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Restaurant'
+        '400':
+          description: Ошибка при создании ресторана
+          
+  /restaurants/{restaurant_id}:
+    get:
+      tags: 
+        - Restaurants
+      summary: Получить информацию о ресторане по ID
+      description: Возвращает информацию об определенном ресторане.
+      operationId: getRestaurantById
+      parameters:
+        - name: restaurant_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Restaurant'
+        '404':
+          description: Ресторан не найден
+    put:
+      tags: 
+        - Restaurants
+      summary: Обновить данные ресторана
+      description: Обновляет данные существующего ресторана
+      parameters:
+        - name: restaurant_id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: ID ресторана
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Restaurant'
+      responses:
+        '200':
+          description: Данные ресторана успешно обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Restaurant'
+        '400':
+          description: Некорректные данные запроса. Проверьте обязательные поля и типы данных.
+        '404':
+          description: Ресторан с указанным ID не найден.
+        '500':
+          description: Внутренняя ошибка сервера.
+    delete:
+      tags: 
+        - Restaurants
+      summary: Удалить ресторан по ID
+      operationId: delRestaurantById
+      parameters:
+        - name: restaurant_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное удаление ресторана
+          content:
+            application/json: {}
+        'default':
+          description: Ошибка удаления ресторана
+          
+  /restaurants/{restaurant_id}/menu:
+    get:
+      tags: 
+        - Restaurants
+      summary: Получить меню ресторана
+      description: Возвращает меню определенного ресторана.
+      parameters:
+        - in: path
+          name: restaurant_id
+          schema:
+            type: integer
+          required: true
+          description: ID ресторана
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Menu'
+        '404':
+          description: Ресторан или меню не найдены
+  
+  /customers:
+    get:
+      tags: 
+        - Customers
+      summary: Получить список заказчиков
+      description: Возвращает список заказчиков
+      operationId: getAllCustomers
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customers'
+        '400':
+          description: Ошибка запроса
+    post:
+      summary: Добавить нового заказчика
+      description: Создает нового заказчика.
+      tags:
+        - Customers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '201':
+          description: Заказчик успешно добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Ошибка при добавлении заказчика
+          
+  /сustomers/{сustomer_id}:
+    get:
+      tags: 
+        - Customers
+      summary: Получить информацию заказчике по ID
+      description: Возвращает информацию об определенном заказчике
+      operationId: getCustomerById
+      parameters:
+        - name: сustomer_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: Заказчик не найден
+    put:
+      tags: 
+        - Customers
+      summary: Обновить данные заказчика
+      description: Обновляет данные существующего заказчика
+      parameters:
+        - name: сustomer_id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: ID клиента
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '200':
+          description: Данные клиента успешно обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Некорректные данные запроса. Проверьте обязательные поля и типы данных.
+        '404':
+          description: Клиент с указанным ID не найден.
+        '500':
+          description: Внутренняя ошибка сервера.
+    delete:
+      tags: 
+        - Customers
+      summary: Удалить заказчика по ID
+      operationId: delCustomerById
+      parameters:
+        - name: сustomer_id
+          in: path
+          required: true
+          schema:
+            type: integer    
+      responses:
+        '200':
+          description: Успешное удаление заказчика
+          content:
+            application/json: {}
+        'default':
+          description: Ошибка удаления заказчика
+          
+  /orders:
+    get:
+      summary: Получить список заказов
+      description: Возвращает список заказов
+      tags:
+        - Orders
+      operationId: getAllOrders
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Orders'
+        '400':
+          description: Ошибка запроса
+          
+    post:
+      summary: Создать новый заказ
+      description: Создает новый заказ.
+      tags:
+        - Orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '201':
+          description: Заказ успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Ошибка при создании заказа
+
+  /orders/{order_id}:
+    get:
+      tags: 
+        - Orders
+      summary: Получить информацию о заказе по ID
+      description: Возвращает информацию об определенном заказе
+      operationId: getOrderById
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Заказ не найден
+    put:
+      tags: 
+        - Orders
+      summary: Обновить данные заказа
+      description: Обновляет данные существующего заказа
+      parameters:
+        - name: order_id
+          in: path
+          schema:
+            type: integer
+          required: true
+          description: ID заказа
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '200':
+          description: Данные заказа успешно обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Некорректные данные запроса. Проверьте обязательные поля и типы данных.
+        '404':
+          description: Заказ с указанным ID не найден.
+        '500':
+          description: Внутренняя ошибка сервера.
+    delete:
+      tags: 
+        - Orders
+      summary: Удалить заказ по ID
+      operationId: delOrderById
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное удаление заказа
+          content:
+            application/json: {}
+        'default':
+          description: Ошибка удаления заказа     
+          
+          
+components:
+  schemas:
+    
+    Customers:
+      type: array
+      items:
+      $ref: "#/components/schemas/Customer"
+    
+    Customer:
+      type: object
+      required:
+        - customer_id
+      properties:
+        customer_id:
+          type: integer
+        name:
+          type: string
+        lastname:
+          type: string  
+          
+    Restaurant:
+      type: object
+      required:
+        - restaurant_id
+      properties:
+        restaurant_id:
+          type: integer
+        name:
+          type: string
+        address:
+          type: string
+        kitchen:
+          type: array
+          items:
+            type: string
+
+    Restaurants:
+      type: array
+      items:
+      $ref: "#/components/schemas/Restaurant"
+
+    Menu:
+      type: object
+      properties:
+        restaurant_id:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuItem'
+
+    MenuItem:
+      type: object
+      properties:
+        menu_item_id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: float
+    
+    Order:
+      type: object
+      properties:
+        order_id:
+          type: integer
+        customer_id:
+          type: integer
+        restaurant_id:
+          type: integer
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              menu_item_id:
+                type: integer
+              quantity:
+                type: integer
+        cost:
+          type: number
+          format: float
+          
+    Orders:
+      type: array
+      items:
+      $ref: "#/components/schemas/Order"
