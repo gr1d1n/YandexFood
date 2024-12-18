@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Яндекс Еда API
-  version: 1.0.0
+  version: 0.0.1
   description: API для взаимодействия с сервисом Яндекс Еда.  Позволяет получать информацию о ресторанах, меню, заказах и другую информацию.
 
 servers:
@@ -37,7 +37,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Restaurant'
+              $ref: '#/components/schemas/RestaurantCreate'
       responses:
         '201':
           description: Ресторан успешно создан
@@ -48,7 +48,7 @@ paths:
         '400':
           description: Ошибка при создании ресторана
           
-  /restaurants/{restaurant_id}:
+  /restaurants/{id}:
     get:
       tags: 
         - Restaurants
@@ -56,7 +56,7 @@ paths:
       description: Возвращает информацию об определенном ресторане.
       operationId: getRestaurantById
       parameters:
-        - name: restaurant_id
+        - name: id
           in: path
           required: true
           schema:
@@ -76,7 +76,7 @@ paths:
       summary: Обновить данные ресторана
       description: Обновляет данные существующего ресторана
       parameters:
-        - name: restaurant_id
+        - name: id
           in: path
           schema:
             type: integer
@@ -87,7 +87,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Restaurant'
+              $ref: '#/components/schemas/RestaurantCreate'
       responses:
         '200':
           description: Данные ресторана успешно обновлены
@@ -107,7 +107,7 @@ paths:
       summary: Удалить ресторан по ID
       operationId: delRestaurantById
       parameters:
-        - name: restaurant_id
+        - name: id
           in: path
           required: true
           schema:
@@ -120,7 +120,7 @@ paths:
         'default':
           description: Ошибка удаления ресторана
           
-  /restaurants/{restaurant_id}/menu:
+  /restaurants/{id}/menu:
     get:
       tags: 
         - Restaurants
@@ -128,7 +128,7 @@ paths:
       description: Возвращает меню определенного ресторана.
       parameters:
         - in: path
-          name: restaurant_id
+          name: id
           schema:
             type: integer
           required: true
@@ -139,7 +139,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Menu'
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MenuItem'
         '404':
           description: Ресторан или меню не найдены
   
@@ -171,7 +176,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Customer'
+              $ref: '#/components/schemas/CustomerCreate'
       responses:
         '201':
           description: Заказчик успешно добавлен
@@ -281,7 +286,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Order'
+              $ref: '#/components/schemas/OrderCreate'
       responses:
         '201':
           description: Заказ успешно создан
@@ -292,7 +297,7 @@ paths:
         '400':
           description: Ошибка при создании заказа
 
-  /orders/{order_id}:
+  /orders/{id}:
     get:
       tags: 
         - Orders
@@ -300,7 +305,7 @@ paths:
       description: Возвращает информацию об определенном заказе
       operationId: getOrderById
       parameters:
-        - name: order_id
+        - name: id
           in: path
           required: true
           schema:
@@ -320,7 +325,7 @@ paths:
       summary: Обновить данные заказа
       description: Обновляет данные существующего заказа
       parameters:
-        - name: order_id
+        - name: id
           in: path
           schema:
             type: integer
@@ -351,7 +356,7 @@ paths:
       summary: Удалить заказ по ID
       operationId: delOrderById
       parameters:
-        - name: order_id
+        - name: id
           in: path
           required: true
           schema:
@@ -373,24 +378,30 @@ components:
       items:
       $ref: "#/components/schemas/Customer"
     
+    CustomerCreate:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+    
     Customer:
       type: object
       required:
-        - customer_id
+        - id
       properties:
-        customer_id:
+        id:
           type: integer
         name:
           type: string
-        lastname:
-          type: string  
           
     Restaurant:
       type: object
       required:
-        - restaurant_id
+        - id
       properties:
-        restaurant_id:
+        id:
           type: integer
         name:
           type: string
@@ -400,7 +411,33 @@ components:
           type: array
           items:
             type: string
-
+        menu:
+          type: object
+          $ref: '#/components/schemas/Menu'
+        
+    
+    RestaurantCreate:
+      type: object
+      required:
+        - name
+        - address
+        - kitchen
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        kitchen:
+          type: array
+          items:
+            type: string
+        menu:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuItem'
+          
+            
+    
     Restaurants:
       type: array
       items:
@@ -419,7 +456,7 @@ components:
     MenuItem:
       type: object
       properties:
-        menu_item_id:
+        id:
           type: integer
         name:
           type: string
@@ -432,7 +469,7 @@ components:
     Order:
       type: object
       properties:
-        order_id:
+        id:
           type: integer
         customer_id:
           type: integer
@@ -447,9 +484,23 @@ components:
                 type: integer
               quantity:
                 type: integer
-        cost:
-          type: number
-          format: float
+    
+    OrderCreate:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+        restaurant_id:
+          type: integer
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              menu_item_id:
+                type: integer
+              quantity:
+                type: integer
           
     Orders:
       type: array
