@@ -14,7 +14,7 @@ paths:
       tags: 
         - Restaurants
       summary: Получить список ресторанов
-      description: Возвращает список ресторанов с фильтром по параметрам.
+      description: Возвращает список ресторанов
       operationId: getAllRestaurants
       responses:
         '200':
@@ -336,7 +336,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Order'
+              $ref: '#/components/schemas/OrderUpdate'
       responses:
         '200':
           description: Данные заказа успешно обновлены
@@ -412,8 +412,9 @@ components:
           items:
             type: string
         menu:
-          type: object
-          $ref: '#/components/schemas/Menu'
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuItem'
         
     
     RestaurantCreate:
@@ -488,8 +489,6 @@ components:
     OrderCreate:
       type: object
       properties:
-        customer_id:
-          type: integer
         restaurant_id:
           type: integer
         items:
@@ -501,8 +500,22 @@ components:
                 type: integer
               quantity:
                 type: integer
+    
+    OrderUpdate:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              menu_item_id:
+                type: integer
+              quantity:
+                type: integer
+    
           
     Orders:
       type: array
       items:
-      $ref: "#/components/schemas/Order"
+        $ref: "#/components/schemas/Order"
